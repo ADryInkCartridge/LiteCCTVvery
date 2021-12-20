@@ -8,7 +8,6 @@ import android.view.SurfaceView
 import java.io.IOException
 
 class CameraPreview (context: Context, private val mCamera: Camera) : SurfaceView(context), SurfaceHolder.Callback {
-    private val TAG = "Preview"
     private val mHolder: SurfaceHolder = holder.apply {
         // Install a SurfaceHolder.Callback so we get notified when the
         // underlying surface is created and destroyed.
@@ -48,6 +47,9 @@ class CameraPreview (context: Context, private val mCamera: Camera) : SurfaceVie
             // ignore: tried to stop a non-existent preview
         }
 
+        // set focus on camera
+        setFocus(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE)
+
         // set preview size and make any resize, rotate or
         // reformatting changes here
 
@@ -60,5 +62,18 @@ class CameraPreview (context: Context, private val mCamera: Camera) : SurfaceVie
                 Log.d(TAG, "Error starting camera preview: ${e.message}")
             }
         }
+    }
+
+    /**
+     * Set focus on camera
+     */
+    private fun setFocus(mParameter: String) {
+        val mParameters = mCamera.parameters
+        mParameters.focusMode = mParameter
+        mCamera.parameters = mParameters
+    }
+
+    companion object {
+        const val TAG = "Preview"
     }
 }
