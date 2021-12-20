@@ -8,7 +8,6 @@ import android.view.SurfaceView
 import java.io.IOException
 
 class CameraPreview (context: Context, private val mCamera: Camera) : SurfaceView(context), SurfaceHolder.Callback {
-    private val TAG = "Preview"
     private val mHolder: SurfaceHolder = holder.apply {
         // Install a SurfaceHolder.Callback so we get notified when the
         // underlying surface is created and destroyed.
@@ -72,5 +71,9 @@ class CameraPreview (context: Context, private val mCamera: Camera) : SurfaceVie
         val mParameters = mCamera.parameters
         mParameters.focusMode = mParameter
         mCamera.parameters = mParameters
+    }
+
+    companion object {
+        const val TAG = "Preview"
     }
 }

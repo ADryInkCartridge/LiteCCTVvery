@@ -1,20 +1,19 @@
 package com.example.litecctvvery
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.hardware.Camera
 import android.media.RingtoneManager
 import android.net.Uri
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Environment
 import android.os.Handler
 import android.os.Looper
-import android.provider.MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
+import android.support.v7.app.AppCompatActivity
 import android.util.Base64
 import android.util.Log
 import android.widget.Button
@@ -28,13 +27,12 @@ import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import org.json.JSONObject
-import java.io.*
+import java.io.ByteArrayOutputStream
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.concurrent.thread
 
 class MainActivity : AppCompatActivity() {
-    private var TAG = "Main"
     private var mCamera: Camera? = null
     private var mPreview: CameraPreview? = null
     private val motionDetector: MotionDetector = MotionDetector()
@@ -63,7 +61,7 @@ class MainActivity : AppCompatActivity() {
         cursor!!.moveToFirst()
         if(cursor.count != 0 ){
             token = cursor.getString(0)
-            tvToken.setText(token)
+            tvToken.text = token
         }
         else
             generateToken()
@@ -85,7 +83,7 @@ class MainActivity : AppCompatActivity() {
 
         btnCapture.setOnClickListener { captureButtonEvent() }
 
-        thread() {
+        thread {
             cameraHandler = Handler(Looper.getMainLooper())
             cameraHandler.post(object: Runnable {
                 override fun run() {
@@ -98,14 +96,15 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private fun captureButtonEvent() {
         if (isCameraCapturing) {
             isCameraCapturing = false
-            btnCapture.setText("Start")
+            btnCapture.text = "Start"
         }
         else {
             isCameraCapturing = true
-            btnCapture.setText("Stop")
+            btnCapture.text = "Stop"
         }
     }
 
@@ -114,12 +113,7 @@ class MainActivity : AppCompatActivity() {
             baseContext, it) == PackageManager.PERMISSION_GRANTED
     }
 
-    private fun releaseCamera() {
-        mCamera?.release() // release the camera for other applications
-        mCamera = null
-    }
-
-    fun getCameraInstance(): Camera? {
+    private fun getCameraInstance(): Camera? {
         return try {
             Camera.open() // attempt to get a Camera instance
         } catch (e: Exception) {
@@ -131,13 +125,13 @@ class MainActivity : AppCompatActivity() {
     private fun generateToken() {
         val queue = Volley.newRequestQueue(this)
         val stringRequest = StringRequest(Request.Method.GET, URL_TOKEN_POST,
-            Response.Listener<String> { response ->
+            { response ->
                 Log.e(TAG, "Generated Token: $response")
                 db.addToken(response)
                 token = response
-                tvToken.setText(token)
+                tvToken.text = token
             },
-            Response.ErrorListener { Log.e(TAG, "Token can NOT be generated") })
+            { Log.e(TAG, "Token can NOT be generated") })
 
         queue.add(stringRequest)
     }
@@ -214,7 +208,7 @@ class MainActivity : AppCompatActivity() {
 
 
     companion object {
-        private const val TAG = "CameraXBasic"
+        private const val TAG = "Main"
         private const val FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS"
         private const val REQUEST_CODE_PERMISSIONS = 10
         private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA)
