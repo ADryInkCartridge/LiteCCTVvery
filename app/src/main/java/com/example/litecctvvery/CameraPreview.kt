@@ -48,6 +48,9 @@ class CameraPreview (context: Context, private val mCamera: Camera) : SurfaceVie
             // ignore: tried to stop a non-existent preview
         }
 
+        // set focus on camera
+        setFocus(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE)
+
         // set preview size and make any resize, rotate or
         // reformatting changes here
 
@@ -60,5 +63,14 @@ class CameraPreview (context: Context, private val mCamera: Camera) : SurfaceVie
                 Log.d(TAG, "Error starting camera preview: ${e.message}")
             }
         }
+    }
+
+    /**
+     * Set focus on camera
+     */
+    private fun setFocus(mParameter: String) {
+        val mParameters = mCamera.parameters
+        mParameters.focusMode = mParameter
+        mCamera.parameters = mParameters
     }
 }
