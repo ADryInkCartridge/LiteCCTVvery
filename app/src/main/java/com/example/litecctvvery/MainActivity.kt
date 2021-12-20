@@ -10,6 +10,8 @@ import android.net.Uri
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Environment
+import android.os.Handler
+import android.os.Looper
 import android.provider.MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
@@ -39,12 +41,16 @@ class MainActivity : AppCompatActivity() {
     private val db = DBHelper(this, null)
     private lateinit var token: String
     private lateinit var tvToken: TextView
+    private lateinit var btnCapture: Button
+    private var isCameraCapturing: Boolean = false
+    private lateinit var cameraHandler: Handler
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         tvToken = findViewById(R.id.textview_token)
+        btnCapture = findViewById(R.id.button_capture)
 
         if (!allPermissionsGranted()) {
             ActivityCompat.requestPermissions(
@@ -77,13 +83,29 @@ class MainActivity : AppCompatActivity() {
             preview.addView(it)
         }
 
-        var captureButton: Button = findViewById(R.id.button_capture)
-        captureButton.setOnClickListener { captureButtonEvent() }
+        btnCapture.setOnClickListener { captureButtonEvent() }
+
+        thread() {
+            cameraHandler = Handler(Looper.getMainLooper())
+            cameraHandler.post(object: Runnable {
+                override fun run() {
+                    if (isCameraCapturing) {
+                        mCamera?.takePicture(null, null, mPicture)
+                    }
+                    cameraHandler.postDelayed(this, 900)
+                }
+            })
+        }
     }
 
     private fun captureButtonEvent() {
-        thread() {
-            mCamera?.takePicture(null, null, mPicture)
+        if (isCameraCapturing) {
+            isCameraCapturing = false
+            btnCapture.setText("Start")
+        }
+        else {
+            isCameraCapturing = true
+            btnCapture.setText("Stop")
         }
     }
 
@@ -186,9 +208,6 @@ class MainActivity : AppCompatActivity() {
             val base64String = getBase64OfPhoto(bitmap)
             val timestamp = SimpleDateFormat(FILENAME_FORMAT, Locale.US).format(System.currentTimeMillis())
             sendImageToCloud(timestamp, base64String, token)
-        }
-        else {
-            Toast.makeText(baseContext, "NO MOTION DETECTED", Toast.LENGTH_LONG).show()
         }
         mCamera?.startPreview()
     }
