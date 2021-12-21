@@ -329,7 +329,12 @@ class CameraPreview (context: Context, private val mCamera: Camera) : SurfaceVie
         // set focus on camera
 
         if(!usingFrontCam)
-        setFocus(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE)
+        try {
+            setFocus(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE)
+        }
+        catch (e: RuntimeException){
+            Log.d("RTE", e.toString())
+        }
 
 
         // set preview size and make any resize, rotate or
