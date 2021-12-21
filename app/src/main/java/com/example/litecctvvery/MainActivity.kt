@@ -47,10 +47,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var btnSwitch: ImageButton
     private var isCameraCapturing: Boolean = false
     private lateinit var cameraHandler: Handler
-    var safeToTakePicture = false
-    var inPreview = true
-    var frontCamID = 1
-    var backCamID = 0
+    private var safeToTakePicture = false
+    private var inPreview = true
+    private var frontCamID = 1
+    private var backCamID = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
