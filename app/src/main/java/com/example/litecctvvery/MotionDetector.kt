@@ -12,6 +12,7 @@ class MotionDetector {
         Log.i("MotionDetector", "Score is $newImagePoint")
         if (lastImagePoint == 0.0) {
             lastImagePoint = newImagePoint
+            Log.i("MotionDetector", "1st motion")
         }
         else if (kotlin.math.abs(lastImagePoint - newImagePoint) > ERROR_POINT) {
             lastImagePoint = newImagePoint
