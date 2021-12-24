@@ -92,6 +92,7 @@ class MainActivity : AppCompatActivity() {
         // Set the Preview view as the content of our activity.
         mPreview?.also {
             val preview: FrameLayout = findViewById(R.id.camera_preview)
+            preview.removeAllViews()
             preview.addView(it)
         }
 
@@ -268,6 +269,7 @@ class MainActivity : AppCompatActivity() {
         }
         mPreview?.also {
             val preview: FrameLayout = findViewById(R.id.camera_preview)
+            preview.removeAllViews()
             preview.addView(it)
         }
         safeToTakePicture = true
